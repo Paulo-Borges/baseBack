@@ -1,3 +1,6 @@
+using baseBack.API.DataContext;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -9,6 +12,12 @@ builder.Services.AddControllers();
 //_______________________________X__________________________Conexão Swagger__________X
 builder.Services.AddSwaggerGen();
 
+//_______________________________X__________________________Conexão Banco de Dados__________X
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
+//_______________________________X__________________________Conexão Cors__________X
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
@@ -36,6 +45,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
+//_______________________________X__________________________Conexão Cors_____X
+app.UseCors("AllowAngular");
 app.MapControllers();
 
 app.Run();

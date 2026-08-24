@@ -1,6 +1,7 @@
 ﻿using baseBack.API.DataContext;
 using baseBack.API.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 
 namespace baseBack.API.Controllers
@@ -16,16 +17,22 @@ namespace baseBack.API.Controllers
             _context = context;
         }
         [HttpGet]
-        public IActionResult GetContatos()
+        public async Task<ActionResult<IEnumerable<Contato>>> GetContatos()
         {
-            var contatos = _context.Contatos.ToList();
+            var contatos = await _context.Contatos
+                .AsNoTracking()
+                .ToListAsync();
+
+
             return Ok(contatos);
         }
 
         [HttpGet("{id:int}")]
-        public IActionResult GetContato(int id)
+        public async Task<ActionResult<Contato>> GetContato(int id)
         {
-            var contato = _context.Contatos.Find(id);
+            var contato = await _context.Contatos
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Id == id);
 
             if (contato is null)
             {
@@ -36,7 +43,7 @@ namespace baseBack.API.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateContato([FromBody] Contato contato)
+        public async Task<ActionResult<Contato>> CreateContato(Contato contato)
         {
             if (contato == null)
             {
