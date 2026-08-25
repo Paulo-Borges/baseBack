@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using baseBack.API.DTOs;
+using System.Reflection.Metadata.Ecma335;
 
 namespace baseBack.API.Controllers
 {
@@ -70,5 +71,20 @@ namespace baseBack.API.Controllers
             await Task.Delay(TimeSpan.FromSeconds(30), cancellationToken);
             return Ok(new { mensagem = "Operacao concluida" });
         }
+
+        [HttpGet("bloqueante")]
+        public IActionResult Bloqueante()
+        {
+            Thread.Sleep(TimeSpan.FromSeconds(2));
+            return Ok(new { memsagem = "Operacao bloqueante concluida" });
+        }
+
+        [HttpGet("assincrono")]
+        public async Task<IActionResult> Assicrono(CancellationToken cancellationToken)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken);
+            return Ok(new { mensagem = "Operacao assincrona concluida" });
+        }
+
     }
 }

@@ -14,7 +14,8 @@ builder.Services.AddSwaggerGen();
 
 //_______________________________X__________________________Conexão Banco de Dados__________X
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
+    sqlOptions => sqlOptions.CommandTimeout(30)));
 
 
 //_______________________________X__________________________Conexão Cors__________X
@@ -26,6 +27,12 @@ builder.Services.AddCors(options =>
            .AllowAnyMethod()
            .AllowAnyHeader());
     
+});
+
+//_______________________________X__________________________Kestrel__________X
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 1 * 1024 * 1024;
 });
 
 var app = builder.Build();
