@@ -3,6 +3,7 @@ using baseBack.API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using baseBack.API.DTOs;
 
 namespace baseBack.API.Controllers
 {
@@ -17,11 +18,16 @@ namespace baseBack.API.Controllers
             _context = context;
         }
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Contato>>> GetContatos()
+        public async Task<ActionResult<IEnumerable<ContatoResponse>>> GetContatos( CancellationToken cancellationToken)
         {
             var contatos = await _context.Contatos
                 .AsNoTracking()
-                .ToListAsync();
+                .Select(contato => new ContatoResponse(
+                    contato.Id,
+                    contato.Nome,
+                    contato.Email,
+                    contato.Mensagem))
+                .ToListAsync(cancellationToken);
 
 
             return Ok(contatos);
@@ -43,15 +49,26 @@ namespace baseBack.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Contato>> CreateContato(Contato contato)
+        public async Task<ActionResult<ContatoResponse>> CreateContato(CreateContatoRequest request, CancellationToken cancellationToken)
         {
-            if (contato == null)
+            var contato = new Contato
             {
-                return BadRequest();
-            }
+                Nome = request.Nome,
+                Email = request.Email,
+                Mensagem = request.Mensagem
+            };
             _context.Contatos.Add(contato);
-            _context.SaveChanges();
-            return CreatedAtAction(nameof(GetContatos), new { id = contato.Id }, contato);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            var contatoResponse = new ContatoResponse(contato.Id, contato.Nome, contato.Email, contato.Mensagem);
+            return CreatedAtAction(nameof(GetContatos), new { id = contato.Id }, contatoResponse);
+        }
+
+        [HttpGet("demorado")]
+        public async Task<IActionResult> Demorado( CancellationToken cancellationToken )
+        {
+            await Task.Delay(TimeSpan.FromSeconds(30), cancellationToken);
+            return Ok(new { mensagem = "Operacao concluida" });
         }
     }
 }
