@@ -49,6 +49,35 @@ namespace baseBack.API.Controllers
             return Ok(contato);
         }
 
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult<ContatoResponse>> UpdateContato( int id, [FromBody] Contato editarContato)
+        {
+            // 1. Busca o registro existente no banco de dados pelo ID
+            var contatoExistente = await _context.Contatos.FindAsync(id);
+
+            if (contatoExistente == null)
+            {
+                return NotFound("Contato não encontrado.");
+            }
+
+            contatoExistente.Nome = editarContato.Nome;
+            contatoExistente.Email = editarContato.Email;
+            contatoExistente.Mensagem = editarContato.Mensagem;
+
+
+            await _context.SaveChangesAsync();
+
+            var response = new ContatoResponse(
+              contatoExistente.Id,
+              contatoExistente.Nome,
+              contatoExistente.Email,
+              contatoExistente.Mensagem
+             );
+
+
+            return (response);
+        }
+
         [HttpPost]
         public async Task<ActionResult<ContatoResponse>> CreateContato(CreateContatoRequest request, CancellationToken cancellationToken)
         {
