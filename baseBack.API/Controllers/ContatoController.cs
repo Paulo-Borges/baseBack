@@ -65,26 +65,7 @@ namespace baseBack.API.Controllers
             return CreatedAtAction(nameof(GetContatos), new { id = contato.Id }, contatoResponse);
         }
 
-        [HttpGet("demorado")]
-        public async Task<IActionResult> Demorado( CancellationToken cancellationToken )
-        {
-            await Task.Delay(TimeSpan.FromSeconds(30), cancellationToken);
-            return Ok(new { mensagem = "Operacao concluida" });
-        }
-
-        [HttpGet("bloqueante")]
-        public IActionResult Bloqueante()
-        {
-            Thread.Sleep(TimeSpan.FromSeconds(2));
-            return Ok(new { memsagem = "Operacao bloqueante concluida" });
-        }
-
-        [HttpGet("assincrono")]
-        public async Task<IActionResult> Assicrono(CancellationToken cancellationToken)
-        {
-            await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken);
-            return Ok(new { mensagem = "Operacao assincrona concluida" });
-        }
+      
 
     }
 }
