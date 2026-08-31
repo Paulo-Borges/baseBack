@@ -5,16 +5,17 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using baseBack.API.DTOs;
 using System.Reflection.Metadata.Ecma335;
+using baseBack.API.Enums;
 
 namespace baseBack.API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    public class ContatoController : ControllerBase
+    [Route("api/[controller]")]
+    public class AppController : ControllerBase
     {
         private readonly AppDbContext _context;
 
-        public ContatoController(AppDbContext context)
+        public AppController(AppDbContext context)
         {
             _context = context;
         }
@@ -111,7 +112,36 @@ namespace baseBack.API.Controllers
             return NoContent();
         }
 
+        [ApiController]
+        [Route("api/pessoa")]
 
+        public class PessoaController : ControllerBase
+        {
+            private readonly AppDbContext _context;
+            public PessoaController(AppDbContext context)
+            {
+                _context = context;
+            }
+
+            [HttpPost]
+            public async Task<ActionResult<DTOPessoa>> Cadastrar([FromBody] CadastrarPessoaRequest request)
+            {
+                var pessoa = new Pessoa
+                {
+                    Nome = request.Nome,
+                    DataNascimento = request.DataNascimento,
+                    Cpf = request.Cpf,
+                    Email = request.Email,
+                    Telefone = request.Telefone,
+                    EstadoCivil = (EstadoCivil)request.EstadoCivil,
+                    Profissao = request.Profissao,
+                    Naturalidade = (Naturalidade)request.Naturalidade
+                };
+                _context.Pessoas.Add(pessoa);
+                await _context.SaveChangesAsync();
+                return NoContent();
+            }
+        }
 
 
     }

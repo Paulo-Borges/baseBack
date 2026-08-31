@@ -10,5 +10,6 @@ namespace baseBack.API.DataContext
         }
 
         public DbSet<Models.Contato> Contatos { get; set; }
+        public DbSet<Models.Pessoa> Pessoas { get; set; }
     }
 }
