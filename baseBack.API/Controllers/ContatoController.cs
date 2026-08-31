@@ -94,7 +94,25 @@ namespace baseBack.API.Controllers
             return CreatedAtAction(nameof(GetContatos), new { id = contato.Id }, contatoResponse);
         }
 
-      
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> DeleteContato(int id)
+        {
+            var contato = await _context.Contatos.FindAsync(id);
+
+            if (contato == null)
+            {
+                return NotFound("Contato não encontrado.");
+            }
+
+            _context.Contatos.Remove(contato);
+
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+
+
 
     }
 }
