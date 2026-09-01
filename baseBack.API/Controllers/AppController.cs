@@ -122,6 +122,37 @@ namespace baseBack.API.Controllers
         {
             _context = context;
         }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<DTOPessoa>>> GetPessoas()
+        {
+            var pessoa = await _context.Pessoas
+                .AsNoTracking()
+                .Select(pessoa => new DTOPessoa(
+                    pessoa.Id,
+                    pessoa.Nome,
+                    pessoa.Cpf,
+                    pessoa.Email))
+                .ToListAsync();
+
+            return Ok(pessoa);
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<DTOPessoa>> GetPessoa(int id)
+        {
+            var pessoa = await _context.Pessoas
+                .AsNoTracking()
+                .Where(p => p.Id == id)
+                .Select(p => new DTOPessoa(p.Id, p.Nome, p.Cpf, p.Email))
+                .FirstOrDefaultAsync();
+
+            if (pessoa is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(pessoa);
+        }
 
         [HttpPost]
         public async Task<ActionResult<DTOPessoa>> Cadastrar([FromBody] CadastrarPessoaRequest request)
