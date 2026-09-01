@@ -111,38 +111,35 @@ namespace baseBack.API.Controllers
 
             return NoContent();
         }
+    }
+    [ApiController]
+    [Route("api/pessoa")]
 
-        [ApiController]
-        [Route("api/pessoa")]
-
-        public class PessoaController : ControllerBase
+    public class PessoaController : ControllerBase
+    {
+        private readonly AppDbContext _context;
+        public PessoaController(AppDbContext context)
         {
-            private readonly AppDbContext _context;
-            public PessoaController(AppDbContext context)
-            {
-                _context = context;
-            }
-
-            [HttpPost]
-            public async Task<ActionResult<DTOPessoa>> Cadastrar([FromBody] CadastrarPessoaRequest request)
-            {
-                var pessoa = new Pessoa
-                {
-                    Nome = request.Nome,
-                    DataNascimento = request.DataNascimento,
-                    Cpf = request.Cpf,
-                    Email = request.Email,
-                    Telefone = request.Telefone,
-                    EstadoCivil = (EstadoCivil)request.EstadoCivil,
-                    Profissao = request.Profissao,
-                    Naturalidade = (Naturalidade)request.Naturalidade
-                };
-                _context.Pessoas.Add(pessoa);
-                await _context.SaveChangesAsync();
-                return NoContent();
-            }
+            _context = context;
         }
 
-
+        [HttpPost]
+        public async Task<ActionResult<DTOPessoa>> Cadastrar([FromBody] CadastrarPessoaRequest request)
+        {
+            var pessoa = new Pessoa
+            {
+                Nome = request.Nome,
+                DataNascimento = request.DataNascimento,
+                Cpf = request.Cpf,
+                Email = request.Email,
+                Telefone = request.Telefone,
+                EstadoCivil = (EstadoCivil)request.EstadoCivil,
+                Profissao = request.Profissao,
+                Naturalidade = (Naturalidade)request.Naturalidade
+            };
+            _context.Pessoas.Add(pessoa);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
     }
 }
