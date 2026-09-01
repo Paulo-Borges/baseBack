@@ -135,7 +135,13 @@ namespace baseBack.API.Controllers
                 Telefone = request.Telefone,
                 EstadoCivil = (EstadoCivil)request.EstadoCivil,
                 Profissao = request.Profissao,
-                Naturalidade = (Naturalidade)request.Naturalidade
+                Naturalidade = (Naturalidade)request.Naturalidade,
+
+                 Contato = new Contato
+                 {
+                     Nome = request.Nome,
+                     Email = request.Email,    
+                 }
             };
             _context.Pessoas.Add(pessoa);
             await _context.SaveChangesAsync();
