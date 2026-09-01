@@ -147,5 +147,20 @@ namespace baseBack.API.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
+
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> DeletarPessoa(int id)
+        {
+            var pessoa = await _context.Pessoas.FindAsync(id);
+
+            if (pessoa == null)
+            {
+                return NotFound("Pessoa não encontrada.");
+            }
+            _context.Pessoas.Remove(pessoa);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }
