@@ -10,6 +10,87 @@ using baseBack.API.Enums;
 namespace baseBack.API.Controllers
 {
     [ApiController]
+    [Route("api/auth")]
+    public class AuthController : ControllerBase
+    {
+        [HttpPost("login")]
+        public IActionResult Login([FromBody] LoginRequest request)
+        {
+            // Exemplo simples de validação (substituir pela sua consulta ao banco/Identity)
+            if (request.Email == "admin@teste.com" && request.Password == "123456")
+            {
+                var token = "seu_jwt_token_gerado_aqui";
+                var user = new
+                {
+                    id = 1,
+                    email = request.Email,
+                    role = "admin" // 'admin' ou 'user'
+                };
+
+                return Ok(new { token, user });
+            }
+
+            return Unauthorized(new { message = "E-mail ou senha inválidos." });
+        }
+    }
+
+
+    //[ApiController]
+    //[Route("api/auth")]
+    //public class AuthController : ControllerBase
+    //{
+    //    private readonly AppDbContext _context;
+
+    //    // Injeção de dependência do DbContext
+    //    public AuthController(AppDbContext context)
+    //    {
+    //        _context = context;
+    //    }
+
+    //    [HttpPost("login")]
+    //    public async Task<IActionResult> Login([FromBody] LoginRequest request)
+    //    {
+    //        if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
+    //        {
+    //            return BadRequest(new { message = "E-mail e senha são obrigatórios." });
+    //        }
+
+    //        // 1. Consulta o usuário no banco de dados pelo e-mail
+    //        // (Assumindo que sua entidade no DbContext se chama 'Usuarios' ou 'Users')
+    //        var user = await _context.Contatos
+    //            .FirstOrDefaultAsync(u => u.Email.ToLower() == request.Email.ToLower());
+
+    //        // 2. Verifica se o usuário existe
+    //        if (user == null)
+    //        {
+    //            return Unauthorized(new { message = "E-mail ou senha inválidos." });
+    //        }
+
+    //        // 3. Validação de Senha 
+    //        // NOTA: Em produção, utilize verificação de HASH (ex: BCrypt.Verify(request.Password, user.PasswordHash))
+    //        if (user.Email != request.Password)
+    //        {
+    //            return Unauthorized(new { message = "E-mail ou senha inválidos." });
+    //        }
+
+    //        // 4. Lógica para gerar o token JWT (exemplo estruturado)
+    //        var token = "seu_jwt_token_gerado_aqui";
+
+    //        // 5. Retorna o objeto com a estrutura exata que o Angular espera
+    //        return Ok(new
+    //        {
+    //            token = token,
+    //            user = new
+    //            {
+    //                id = user.Id,
+    //                email = user.Email,
+    //                role = user.Nome // Ex: "admin" ou "user"
+    //            }
+    //        });
+    //    }
+    //}
+
+    [ApiController]
     [Route("api/[controller]")]
     public class AppController : ControllerBase
     {
@@ -20,7 +101,7 @@ namespace baseBack.API.Controllers
             _context = context;
         }
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ContatoResponse>>> GetContatos( CancellationToken cancellationToken)
+        public async Task<ActionResult<IEnumerable<ContatoResponse>>> GetContatos()
         {
             var contatos = await _context.Contatos
                 .AsNoTracking()
@@ -29,7 +110,7 @@ namespace baseBack.API.Controllers
                     contato.Nome,
                     contato.Email,
                     contato.Mensagem))
-                .ToListAsync(cancellationToken);
+                .ToListAsync();
 
 
             return Ok(contatos);
