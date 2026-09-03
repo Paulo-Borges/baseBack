@@ -13,21 +13,36 @@ namespace baseBack.API.Controllers
     [Route("api/auth")]
     public class AuthController : ControllerBase
     {
+        private static readonly List<UserModel> Users = new()
+    {
+        new UserModel { Id = 1, Email = "admin@teste.com", Password = "123456", Role = "admin" },
+        new UserModel { Id = 2, Email = "user@teste.com", Password = "123456", Role = "user" },
+        new UserModel { Id = 3, Email = "paulo@teste.com", Password = "123456", Role = "user" }
+    };
+
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginRequest request)
         {
-            // Exemplo simples de validação (substituir pela sua consulta ao banco/Identity)
-            if (request.Email == "admin@teste.com" && request.Password == "123456")
+            // Busca o usuário na lista que coincida com o e-mail e a senha informados
+            var user = Users.FirstOrDefault(u =>
+                u.Email.Equals(request.Email, StringComparison.OrdinalIgnoreCase) &&
+                u.Password == request.Password
+            );
+
+            if (user != null)
             {
                 var token = "seu_jwt_token_gerado_aqui";
-                var user = new
-                {
-                    id = 1,
-                    email = request.Email,
-                    role = "admin" // 'admin' ou 'user'
-                };
 
-                return Ok(new { token, user });
+                return Ok(new
+                {
+                    token,
+                    user = new
+                    {
+                        id = user.Id,
+                        email = user.Email,
+                        role = user.Role
+                    }
+                });
             }
 
             return Unauthorized(new { message = "E-mail ou senha inválidos." });
